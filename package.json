@@ -1,0 +1,13 @@
+{
+  "type": "module",
+  "dependencies": {
+    "chalk": "^5.0.0",
+    "compression": "^1.7.4",
+    "express": "^4.17.2",
+    "inquirer": "^8.2.0",
+    "mime": "^3.0.0",
+    "minimist": "^1.2.5",
+    "morgan": "^1.10.0",
+    "progress": "^2.0.3"
+  }
+}
