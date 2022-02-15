@@ -9,6 +9,6 @@ http.createServer((req, res) => {
   res.setHeader('Content-Type', 'text/html;charset=utf-8');
   res.write('你好');
   res.end('hello');
-}).listen('9001', () => {
-  console.log('9001端口已监听');
+}).listen('9002', () => {
+  console.log('9002端口已监听');
 })
