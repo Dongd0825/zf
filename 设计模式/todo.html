@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>debounce_exprise</title>
 </head>
 <body>
   <ul id="todos">
@@ -12,36 +12,65 @@
   </ul>
   <script>
     let todos = document.getElementById('todos');
+    // 防抖 停止滚动才触发callback
+    function debounce1(callback, delayTime) {
+      let timer; 
+      return function() {
+        let context = this;
+        let args = Array.from(arguments);
+        let now = Date.now();
+        if (timer) {
+          clearTimeout(timer);
+        }
+        timer = setTimeout(() => {
+          callback.apply(this, args);
+        }, delayTime);
+      }
+    }
     window.onload = function() {
       let result = [{id:1, text: 'a', complete: false},{id:2, text: 'a2', complete: false},{id:3, text: 'a3', complete: false},{id:4, text: 'a4', complete: false}];
       let dom = '';
+
       fetch('/getTodos')
         .then(res => res.json())
         .then(res => {
-          todos.innerHTML = res.map(_result => {
-            console.log(_result.complete);
-          return (`
-              <input type="checkbox" checked=${_result.complete? 'checked':''} key=${_result.id} value=${_result.id}>${_result.complete?'ok':'no'},${_result.text}</input>
-            `)
-          })
+          render(res);
         })
+
       function toggle(id) {
         console.log({id})
         fetch(`/toggle/${id}`)
           .then(res => res.json())
           .then(res => {
-            console.log({res});
-            todos.innerHTML = res.map((_result) => {
-              console.log(_result.complete);
-              return `<input type="checkbox" checked=${_result.complete ? 'checked':''} key=${_result.id} value=${_result.id}>${_result.complete ? "ok" : "no"},${_result.text}</input>`;
-            });
+            render(res);
           })
       }
 
+      function lazyToggle() {
+        let ids = []; // 统一记录id
+        let timer;
+        return function(id) {
+          ids.push(id);
+          if (timer) {
+            clearTimeout(timer);
+          }
+          timer = setTimeout(() => {
+            toggle(id);
+          })
+        }
+      }
+
+      function render(res) {
+        todos.innerHTML = res.map((_result) => {
+          return `<input type="checkbox" ${_result.complete ? 'checked':''} key=${_result.id} value=${_result.id}>${_result.complete ? "ok" : "no"},${_result.text}</input>`;
+        });
+      }
+      const lazyFn = lazyToggle();
+
       todos.addEventListener('click', function(e) {
-        console.log({e}, e.target.value);
         let id = e.target.value;
-        toggle(id);
+        // toggle(id);
+        lazyFn(id);
       }, false);
     }
   </script>

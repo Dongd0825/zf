@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+
 let todos = [{id:1, text: 'a', complete: false},{id:2, text: 'a2', complete: false},{id:3, text: 'a3', complete: false},{id:4, text: 'a4', complete: false}];
       
 app.get('/todos', function(req, res) {
