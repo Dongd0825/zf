@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .container{
+      width: 200px;
+      height: 600px;
+      border: 1px solid black;
+      overflow: auto;
+    }
+
+    .content {
+      width: 100%;
+      height: 2000px;
+      overflow: scroll;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="content">we</div>
+  </div>
+  <script>
+    let containerDom = document.getElementsByClassName('container')[0];
+    let startTime = Date.now();
+    containerDom.addEventListener('scroll', throttle1(fn, 1000), false);
+
+    function fn() {
+      console.log('滚动了', (Date.now() - startTime) / 1000);
+    }
+    // 节流
+    function throttle(fn, delayTime) {
+      let timer;
+      return function() {
+        if (timer) return;
+        timer = setTimeout((...args) => {
+          fn.apply(this, args);
+          clearTimeout(timer);
+        }, delayTime)
+      }
+    }
+    // 防抖
+    function debounce(fn, delayTime) {
+      let timer;
+      return function() {
+        if (timer) {
+          clearTimeout(timer);
+        }
+        timer = setTimeout((...args) => {
+          fn.apply(this, args);
+          clearTimeout(timer);
+        }, delayTime)
+      }
+    }
+
+    // 节流 到达指定时间才执行callback
+    function throttle1(callback, interval) {
+      let lastExecuteTime; // 上一次执行时间
+      return function() {
+        let context = this;
+        let args = Array.from(arguments);
+        let now = Date.now();
+        if (lastExecuteTime) { //到达时间间隔
+          if (now - lastExecuteTime >= interval) {
+            callback.apply(this, args);
+            lastExecuteTime = now;
+          }
+        } else { //第一次执行
+          callback.apply(this, args);
+          lastExecuteTime = now;
+        }
+      }
+    }
+  </script>
+</body>
+</html>
