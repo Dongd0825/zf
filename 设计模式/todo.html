@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <ul id="todos">
+
+  </ul>
+  <script>
+    let todos = document.getElementById('todos');
+    window.onload = function() {
+      let result = [{id:1, text: 'a', complete: false},{id:2, text: 'a2', complete: false},{id:3, text: 'a3', complete: false},{id:4, text: 'a4', complete: false}];
+      let dom = '';
+      fetch('/getTodos')
+        .then(res => res.json())
+        .then(res => {
+          todos.innerHTML = res.map(_result => {
+            console.log(_result.complete);
+          return (`
+              <input type="checkbox" checked=${_result.complete? 'checked':''} key=${_result.id} value=${_result.id}>${_result.complete?'ok':'no'},${_result.text}</input>
+            `)
+          })
+        })
+      function toggle(id) {
+        console.log({id})
+        fetch(`/toggle/${id}`)
+          .then(res => res.json())
+          .then(res => {
+            console.log({res});
+            todos.innerHTML = res.map((_result) => {
+              console.log(_result.complete);
+              return `<input type="checkbox" checked=${_result.complete ? 'checked':''} key=${_result.id} value=${_result.id}>${_result.complete ? "ok" : "no"},${_result.text}</input>`;
+            });
+          })
+      }
+
+      todos.addEventListener('click', function(e) {
+        console.log({e}, e.target.value);
+        let id = e.target.value;
+        toggle(id);
+      }, false);
+    }
+  </script>
+</body>
+</html>
