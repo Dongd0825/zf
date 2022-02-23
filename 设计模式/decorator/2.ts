@@ -95,9 +95,9 @@ import { readonly, decorate } from 'core-decorators';
 
 // test core-decorate
 namespace d {
-  interface Circle {
-    pi: number;
-  }
+  // interface Circle {
+  //   pi: number;
+  // }
   // function handleDescriptor(target: any, key: any, descriptor:any) {
   //   descriptor.writable = false;
   //   return descriptor;
@@ -110,27 +110,27 @@ namespace d {
   //   return decorate(handleDescriptor, args);
   // }
 
-  function deprecate(target:any, methodName:any, descriptor:any) {
-    let oldValue = descriptor.value;
-    descriptor.value = (...args: any) => {
-      let message = (
-        `DESCRIPTION ${target.constructor.name} ${methodName} will be deprcated in future `
-      )
-      alert(message);
-      return oldValue(...args);
-    }
-  }
+  // function deprecate(target:any, methodName:any, descriptor:any) {
+  //   let oldValue = descriptor.value;
+  //   descriptor.value = (...args: any) => {
+  //     let message = (
+  //       `DESCRIPTION ${target.constructor.name} ${methodName} will be deprcated in future `
+  //     )
+  //     alert(message);
+  //     return oldValue(...args);
+  //   }
+  // }
 
   // @ts-ignore
-  class Circle {
-    @readonly
-    pi: number = 1
-    @deprecate
-    getName() {
+  // class Circle {
+  //   @readonly
+  //   pi: number = 1
+  //   @deprecate
+  //   getName() {
 
-    }
-  }
-  const circle = new Circle();
+  //   }
+  // }
+  // const circle = new Circle();
   // circle.pi = 3;
-  console.log(circle);
+  // console.log(circle);
 }
