@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>图片预加载</title>
+</head>
+<body>
+  <div id="bg">
+    <button data-src="/images/1.jpg">b1</button>
+    <button data-src="/images/2.jpg">b2</button>
+    <button data-src="/images/3.jpg">b3</button>
+  </div>
+ 
+  <div>
+    <img src="/images/1.jpg" id="img"/>
+  </div>
+  <script>
+    class BGImage {
+      constructor() {
+        this.img = document.getElementById('img');
+      }
+      setSrc(url) {
+        this.img.src = url;
+      }
+    }
+
+    class ImageProxy {
+      constructor() {
+        this.bgImg = new BGImage();
+      }
+      setSrc(url) {
+        this.bgImg.setSrc('/images/loading.gif');
+        const img = new Image();
+        img.onload = () => {
+          this.bgImg.setSrc(url);
+        }
+        img.src = url;
+      }
+    }
+
+    const img = new ImageProxy();
+    const bg = document.getElementById('bg');
+    bg.addEventListener('click', function(e) {
+      const url = e.target.dataset.src;
+      img.setSrc(url);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+    name<input type="text" name="username" id="username"></input>
+    password<input type="text" name="password" id="password"></input>
+    <button onclick="submit" id="submit">submit</button>
+    <script>
+      Function.prototype.before = function (beforeFn) {
+        let thisFn = this;
+        return function (...args) {
+          if (beforeFn.apply(this, args)) {
+            thisFn.apply(this, args);
+          }
+        }
+      }
+
+      function submit() {
+        console.log('提交表单')
+      }
+
+      submit = submit.before(function() {
+        const dom = document.getElementById('username');
+        console.log('dom1', dom)
+        if (!dom.value) {
+          console.log('username is empty')
+          return false
+        }
+        return true
+      })
+
+      submit = submit.before(function() {
+        const dom = document.getElementById('password');
+        console.log('dom2', dom)
+        if (!dom.value) {
+          console.log('password is empty')
+          return false
+        }
+        return true
+      })
+      console.log('submit before', submit)
+
+      const submitDom = document.getElementById('submit');
+      submitDom.onclick = submit;
+    </script>
+</body>
+</html>

@@ -12,6 +12,7 @@
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
     "progress": "^2.0.3",
+    "react": "^17.0.2",
     "ts-node": "^10.5.0",
     "typescript": "^4.5.5"
   }

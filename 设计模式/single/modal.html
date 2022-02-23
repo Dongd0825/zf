@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <button id="show">show</button>
+  <button id="hide">hide</button>
+  <script type="module">
+    class Modal{
+      constructor(options) {
+        this._element = document.createElement('div');
+        this._element.innerHTML = options.content;
+        this._element.style.cssText = 'border: 1px solid black;width:100px;height:100px;position:absolute;left:50%;top:50%;tranform:translate(-50%,-50%);';
+        document.body.appendChild(this._element);
+      }
+      show() {
+        this._element.style.display = 'block';
+      }
+      hide() {
+        this._element.style.display = 'none';
+      }
+      static getInstance(options) {
+        if (!this.instance) {
+          this.instance = new Modal(options);
+        }
+        return this.instance;
+      }
+    }
+    const showButton = document.getElementById('show');
+    const hideButton = document.getElementById('hide');
+    
+    showButton.onclick = () => {
+      Modal.getInstance({
+        content: 'content'
+      }).show();
+    }
+    hideButton.onclick = () => {
+      Modal.getInstance({
+        content: 'content'
+      }).hide();
+    }
+  </script>
+</body>
+</html>
