@@ -60,7 +60,7 @@ function isShadowEqual(obj1, obj2) {
     return false;
   }
   for(let key of keys) {
-    // obj1[key] !== obj2[key] => Object.is(obj1[key], obj2[key])
+    // obj1[key] !== obj2[key] => Object.is(obj1[key], obj2[key])（0+ 0-） false （‘’  false） false
     if (!obj1.hasOwnProperty(key) || obj1[key] !== obj2[key]) {
       return false;
     }
