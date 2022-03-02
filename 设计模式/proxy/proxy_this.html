@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <button id="btn">点我变红</button>
+  <script>
+    function proxyFn(fn, context) {
+      // return function(...args) {
+      //   fn.apply(context, args);
+      // }
+      fn.bind(context);
+    }
+    const btnDOM = document.getElementById('btn');
+    btnDOM.addEventListener('click', function() {
+      setTimeout(proxyFn(() => {
+        console.log('222');
+      }, this))
+    }, false);
+  </script>
+</body>
+</html>
