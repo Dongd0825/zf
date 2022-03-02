@@ -9,7 +9,7 @@
 let TAG_ROOT = 'root'; // 跟root
 let TAG_HOST = 'host'; // 原生dom节点， div,span,li,ul
 let workInProgress; // 当前工作的filber
-
+const style = 'border:1px solid black';
 let A = {
   type: 'div',
   key: 'A',
@@ -17,8 +17,8 @@ let A = {
     style: {},
     children: [
       // 'A',
-      {type: 'div', key: 'B1', props: {style: {}, children: []}},
-      {type: 'div', key: 'B2', props: {style: {}, children: []}},
+      {type: 'div', key: 'B1', props: {style: '', children: []}},
+      {type: 'div', key: 'B2', props: {style: '', children: []}},
     ]
   }
 } 
@@ -160,6 +160,8 @@ function makeEffectList(completeWork) {
 function createStateNode(fiber) {
   if (fiber.tag === TAG_HOST) {
     let stateNode = document.createElement(fiber.type);
+    debugger
+    stateNode.setAttribute('style', fiber.props.style);
     fiber.stateNode = stateNode;
   }
   return fiber.stateNode;
