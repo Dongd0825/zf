@@ -1,6 +1,6 @@
 import './App.css';
 import { useState } from 'react';
-
+    
 function App() {
   const [arr, setArr] = useState(new Array(10000).fill(0));
 
