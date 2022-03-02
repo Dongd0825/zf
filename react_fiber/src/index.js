@@ -24,6 +24,7 @@ let A = {
 } 
 
 const root = document.getElementById('root');
+let Placement = 'Placement';
 
 let rootFiber = {
   key: 'root',
@@ -43,6 +44,31 @@ function workLoop() {
   while(workInProgress) {
     workInProgress = performUnitWork(workInProgress);
   }
+  console.log('rootFiber', rootFiber);
+  commitRoot(rootFiber);
+}
+
+/** 提交commit */
+function commitRoot(rootFiber) {
+  let currentEffect = rootFiber.firstEffect;
+  while(currentEffect) {
+    let flags = currentEffect.flags;
+    switch(flags) {
+      case Placement: 
+        commitPlacement(currentEffect);
+        break;
+    }
+    currentEffect = currentEffect.nextEffect;
+  }
+}
+
+/**
+ * 插入节点
+ * @param {}} currentEffect 
+ */
+function commitPlacement(currentEffect) {
+  let parent = currentEffect.return;
+  parent.stateNode.appendChild(currentEffect.stateNode);
 }
 
 // 执行单元task
@@ -62,7 +88,7 @@ function performUnitWork(workInProgress) {
       return workInProgress.sibling;
     }
     // 没有弟弟，找叔叔
-    workInProgress = workInProgress.returnFiber;
+    workInProgress = workInProgress.return;
   }
 }
 
@@ -82,6 +108,7 @@ function competeUnitWork(workInProgress) {
       break;
   }
   // 在完成工作单元的时候，要判断有没有对应的dom操作 makeEffectList（构建副作用链表）=不是包含所有节点，仅包含副作用的节点（增删改查｜初次渲染的节点都需要插入）
+  makeEffectList(workInProgress);
 }
 /** 单链表
  * 父亲副作用链表 A
@@ -100,8 +127,33 @@ function competeUnitWork(workInProgress) {
  * lastEffect = 5
  * 5.next = B
  */
-function makeEffectList() {
-
+function makeEffectList(completeWork) {
+  let returnFiber = completeWork.return;
+  if (returnFiber) {
+    // 父fiber没有副作用链表，则父亲和当前的fiber的副作用链表同步
+    if (!returnFiber.firstEffect) {
+      returnFiber.firstEffect = completeWork.firstEffect;
+    }
+    // 如果当前fiber和父fiber都有副作用链表，则要把当前fiber的副作用链表追加到父fiber的副作用链表
+    // 移动firstEffect 和 lastEffect指针
+    if (completeWork.lastEffect) {
+      if (returnFiber.lastEffect) {
+        returnFiber.lastEffect.nextEffect = completeWork.firstEffect;
+      }
+      returnFiber.lastEffect = completeWork.lastEffect;
+    }
+    // 当前fiber有副作用操作
+    // 最后把当前fiber追加到副作用链表尾部
+    // 移动lastEffect指针
+    if (completeWork.flags) {
+      if (returnFiber.lastEffect) {
+        returnFiber.lastEffect.nextEffect = completeWork;
+      } else {
+        returnFiber.firstEffect = completeWork;
+      }
+      returnFiber.lastEffect = completeWork;
+    }
+  }
 }
 
 /** 创建dom元素 并返回 */
@@ -135,6 +187,7 @@ function reconcileChildren(returnFiber, nextChildren) {
 
   for (let i = 0; i < nextChildren.length; i++) {
     let newFiber = createFiber(returnFiber, nextChildren[i]);
+    newFiber.flags = Placement;
     newFiber.return = returnFiber;
     // 当前newFiber是大儿子
     if (!firstChildFiber) {
