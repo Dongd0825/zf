@@ -5,11 +5,16 @@
 //     <div key="B2">B2</div>
 //   </div>
 // )
-
 let TAG_ROOT = 'root'; // 跟root
 let TAG_HOST = 'host'; // 原生dom节点， div,span,li,ul
 let workInProgress; // 当前工作的filber
+let Placement = 'Placement'; //插入
+let Update = 4; //更新
+let PlacementAndUpdate = 6; // 插入并更新
+let Deletion = 8; // 删除
+
 const style = 'border:1px solid black';
+
 let A = {
   type: 'div',
   key: 'A',
@@ -23,9 +28,6 @@ let A = {
   }
 } 
 
-const root = document.getElementById('root');
-let Placement = 'Placement';
-
 let rootFiber = {
   key: 'root',
   tag: TAG_ROOT,
@@ -34,6 +36,9 @@ let rootFiber = {
     children: [A]
   }
 }
+
+const root = document.getElementById('root');
+
 workInProgress = rootFiber;
 
 workLoop();
@@ -48,7 +53,7 @@ function workLoop() {
   commitRoot(rootFiber);
 }
 
-/** 提交commit */
+/** 提交commit 渲染dom ，更具diff标记的，更新dom */
 function commitRoot(rootFiber) {
   let currentEffect = rootFiber.firstEffect;
   while(currentEffect) {
@@ -179,6 +184,7 @@ function beginWork(workInProgress) {
 }
 
 /**
+ * 深度遍历
  * 根据父fiber，子虚拟dom树，构建当前子fiber的fiber树
  * @param {*} workInProgress // 父fiber
  * @param {*} nextChildren // jsx里的虚拟dom
@@ -206,6 +212,7 @@ function reconcileChildren(returnFiber, nextChildren) {
 
 /**
  * 把虚拟dom 构造成fiber结构
+ * 双缓存链表结构
  * @param {} returnFiber 
  * @param {*} element 
  * @returns 
@@ -217,5 +224,6 @@ function createFiber(returnFiber, element) {
     key: element.key, // 唯一标示
     props: element.props, // props
     return: returnFiber, //  父fiber
+    // alternate： 指向老fiber节点
   }
 }
