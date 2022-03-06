@@ -11,7 +11,8 @@
     <p id="child">事件执行</p>
   </div>
   <script>
-    function dispatchEvent(event) {
+   
+    function dispatchEvent(event, useCapture) {
       let paths = [];
       let current = event.target;
       while(current) {
@@ -20,21 +21,29 @@
       }
       //[child, parent, body]
       // 模拟捕获和冒泡 其实在这个时候，原生的捕获和冒泡已经结束了
-      // react模拟捕获
-      for(let i = paths.length - 1; i > 0; i--) {
-        let handler = paths[i].onClickCapture;
-        handler && handler();
-      }
-      // react模拟冒泡
-      for(let i = 0; i < paths.length; i++) {
-        let handler = paths[i].onClick;
-        handler && handler();
+      if (useCapture) {
+        // react模拟捕获
+        for(let i = paths.length - 1; i > 0; i--) {
+          let handler = paths[i].onClickCapture;
+          handler && handler();
+        }
+      } else {
+        // react模拟冒泡
+        for(let i = 0; i < paths.length; i++) {
+          let handler = paths[i].onClick;
+          handler && handler();
+        }
       }
     }
-    // 注册react事件委托 先执行react的冒泡
-    document.addEventListener('click', dispatchEvent)
+
+    let root = document.getElementById('root');
     let parent = document.getElementById('parent');
     let child = document.getElementById('child');
+
+    // react17 事件挂在容器上 可以存在多个react版本
+    root.addEventListener('click', (event) => dispatchEvent(event, false))
+    root.addEventListener('click', (event) => dispatchEvent(event, true), true);
+
     parent.addEventListener('click', () => {
       console.log('父元素元素捕获');
     }, true);
@@ -67,12 +76,12 @@
     }
 
   // document原生捕获
+  // 父元素React元素捕获
+  // 子元素React元素捕获
   // 父元素元素捕获
   // 子元素元素捕获
   // 子元素元素冒泡
   // 父元素元素冒泡
-  // 父元素React元素捕获
-  // 子元素React元素捕获
   // 子元素React元素冒泡
   // 父元素React元素冒泡
   // document原生冒泡
