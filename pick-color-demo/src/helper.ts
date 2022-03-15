@@ -1,4 +1,32 @@
-import { IColors, IRect, IRgba } from './interface';
+
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export interface IRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export type IColors = string[][];
+
+export interface IRgba {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+}
+
+export interface IProps {
+  container: any;
+  listener?: Record<string, (e: any) => void>;
+  scale?: number;
+  useMagnifier?: boolean;
+}
+
 
 /**
  * 加载base64图片
@@ -240,6 +268,7 @@ export function drawTooltip(content: string, tooltipVisible = true) {
   canvas.setAttribute('height', `${height * scale}`);
   canvas.style = `${attrs.style || ''};width: ${width}px;height: ${height}px;`;
   const ctx = canvas.getContext('2d');
+  // @ts-ignore
   ctx?.scale(scale, scale);
   return { canvas, ctx };
 }

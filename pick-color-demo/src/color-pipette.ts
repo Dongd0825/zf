@@ -5,10 +5,10 @@
  */
 // @ts-ignore
 import domtoimage from './dom-to-image.js';
-import { drawTooltip, getCanvas, getCanvasRectColor, loadImage, rbgaObjToHex, renderColorInfo } from './helper.js';
-import { IProps, IRect } from './interface.js.js';
+import { drawTooltip, getCanvas, getCanvasRectColor, loadImage, rbgaObjToHex, renderColorInfo } from './helper.ts';
+import { IProps, IRect } from './interface.ts';
 
-export * from './interface.js';
+export * from './interface.ts';
 
 /**
  * 网页拾色器【吸管工具】
@@ -96,6 +96,7 @@ class ColorPipette {
     document.removeEventListener('keydown', this.handleKeyDown);
     this.canvas?.parentNode?.removeChild(this.canvas);
     this.colorContainer?.parentNode?.removeChild(this.colorContainer);
+    this.colorContainer = null;
   }
 
   /**
