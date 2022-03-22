@@ -23,6 +23,10 @@ export function renderWithHooks(current, workInProgress, Component) {
 
 function mountReducer(reducer, initalArg) {
   let hook = mountInprogressHook();
+  hook.memoizedState = initalArg;
+  const queue = (hook.queue = { pending: null});// 更新队列
+  const dispatch = dispatchAction.bind(null, currentlyRenderingFiber, queue);
+  return [hook.memoizedState, dispatch];
 }
 
 function mountInprogressHook() {
