@@ -1,6 +1,4 @@
-import React, { Suspense, SuspenseList} from 'react';
-
-
+import React, { Suspense } from 'react';
 
 function fetchUser(id: number) {
   return new Promise((resolve, reject) => {
@@ -62,7 +60,8 @@ function User(props: UserProps) {
  class A extends React.Component {
   render() {
     return (
-      <SuspenseList revealOrder="together">
+      // @ts-ignore
+      <React.SuspenseList revealOrder="together">
         <Suspense fallback={<h1>loading</h1>}>
           <User id={1}/>
         </Suspense>
@@ -72,7 +71,7 @@ function User(props: UserProps) {
         <Suspense fallback={<h1>loading</h1>}>
           <User id={3}/>
         </Suspense>
-      </SuspenseList>
+      </React.SuspenseList>
     )
   }
 }

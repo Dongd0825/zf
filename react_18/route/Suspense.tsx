@@ -1,12 +1,14 @@
-import React from 'react';
-import Suspense from '../components/Suspense';
+import React, {Suspense} from 'react';
+// import Suspense from '../components/Suspense';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 
 
 function fetchUser(id: number) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve({success: true, data: {id: 1, name: 'zhangsan'}});
+      // resolve({success: true, data: {id: 1, name: 'zhangsan'}});
+      reject({success: false, error: '数据加载失败'});
     })
   })
 }
@@ -44,17 +46,19 @@ function User() {
       </div>
     ) 
   } else {
-    return null;
+    throw result.error;
+    // return <>数据加载失败</>;
   }
 }
 
 export default class extends React.Component {
   render() {
     return (
-      <Suspense fallback={<h1>loading</h1>}>
-        <User/>
-      </Suspense>
+      <ErrorBoundary fallback="出错了">
+        <Suspense fallback={<h1>loading</h1>}>
+          <User/>
+        </Suspense>
+      </ErrorBoundary>
     )
   }
-
 }

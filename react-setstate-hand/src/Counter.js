@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-class Counter extends React.PureComponent {
+import {Component} from './index';
+class Counter extends  Component{
   state =  {number: 0}
   /**
    * @param {*} event 
