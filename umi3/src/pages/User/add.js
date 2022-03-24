@@ -1,5 +1,5 @@
 import React from 'react';
 
-const Index = <div>add</div>
+const Add = () => <div>add</div>
 
-export default Index;
+export default Add;

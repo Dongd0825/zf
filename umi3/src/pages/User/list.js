@@ -1,6 +1,5 @@
 import React from 'react';
 
-const Index = <div>list
-</div>
+const List = () => <div>list</div>
 
-export default Index;
+export default List;

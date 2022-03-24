@@ -1,6 +1,6 @@
 import React from 'react';
 
-const UserLayout =() => (
+const UserLayout =(props) => (
 <div>
   <ul>
     <li>
@@ -10,6 +10,7 @@ const UserLayout =() => (
       <a href="/user/list">user list</a>
     </li>
   </ul>
+  {props.children}
 </div>
 ) 
 

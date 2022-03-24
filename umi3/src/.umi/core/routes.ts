@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react';
-import { ApplyPluginsType } from '/Users/didong/Desktop/Code/react/zf/umi3/node_modules/@umijs/runtime';
+import { ApplyPluginsType } from '/Users/dongdi/Desktop/code/zf/umi3/node_modules/umi/node_modules/@umijs/runtime';
 import * as umiExports from './umiExports';
 import { plugin } from './plugin';
 
@@ -12,20 +12,25 @@ export function getRoutes() {
     "component": require('@/pages/index.js').default
   },
   {
-    "path": "/User",
+    "path": "/profile",
+    "exact": true,
+    "component": require('@/pages/profile/index.js').default
+  },
+  {
+    "path": "/user",
     "routes": [
       {
-        "path": "/User/add",
+        "path": "/user/add",
         "exact": true,
-        "component": require('@/pages/User/add.js').default
+        "component": require('@/pages/user/add.js').default
       },
       {
-        "path": "/User/list",
+        "path": "/user/list",
         "exact": true,
-        "component": require('@/pages/User/list.js').default
+        "component": require('@/pages/user/list.js').default
       }
     ],
-    "component": require('@/pages/User/_layout.js').default
+    "component": require('@/pages/user/_layout.js').default
   }
 ];
 
