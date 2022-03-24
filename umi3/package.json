@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "umi dev",
-    "umi2": "webpack serve --history-api-fallback"
+    "umi2": "webpack serve --history-api-fallback",
+    "debug": "node --inspect-brk=9229 ./node_modules/umi/bin/umi.js dev"
   },
   "keywords": [],
   "author": "",
