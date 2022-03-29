@@ -28,7 +28,7 @@ class Service {
     }
     // 按照事件分类来分组
     Object.keys(this.hooksByPluginId).forEach(pluginId => {
-      let pluginHooks = hooksByPluginId[pluginId];
+      let pluginHooks = this.hooksByPluginId[pluginId];
       pluginHooks.forEach(hook => {
         const {key} = hook;
         hook.pluginId = pluginId;
@@ -39,9 +39,9 @@ class Service {
   async applyPlugins(opts) {
     let hooksForKey = this.hooks[opts.key] || [];
     // AsyncServicesWaterfallhook 源码
-    let tEvent = await AsyncParalleHook(['_']);
+    let tEvent = await AsyncParallelHook(['_']);
     for(const hook of hooksForKey) {
-      tEvent.tabPromise({name: hook.pluginId}, hook.fn);
+      tEvent.tapPromise({name: hook.pluginId}, hook.fn);
     }
     return await tEvent.promise();
   }

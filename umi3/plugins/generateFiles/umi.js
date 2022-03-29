@@ -9,10 +9,10 @@ const { readFileSync} = require('fs');
 
  const plugin = (pluginAPI) => {
    pluginAPI.onGenerateFiles(async () => {
-    const historyTPL = readFileSync(join(__dirname, 'history.tpl'), 'utf-8');
-    let content = Mustache.render(historyTPL);
+    const umiTPL = readFileSync(join(__dirname, 'umi.tpl'), 'utf-8');
+    let content = Mustache.render(umiTPL);
     writeTmpFile({
-      path: 'core/history.js',
+      path: 'umi.js',
       content
     })
    })

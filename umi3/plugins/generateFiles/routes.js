@@ -9,10 +9,13 @@ const { readFileSync} = require('fs');
 
  const plugin = (pluginAPI) => {
    pluginAPI.onGenerateFiles(async () => {
-    const historyTPL = readFileSync(join(__dirname, 'history.tpl'), 'utf-8');
-    let content = Mustache.render(historyTPL);
+    const routesTPL = readFileSync(join(__dirname, 'routes.tpl'), 'utf-8');
+    const routes = [];
+    let content = Mustache.render(routesTPL, {
+      routes: JSON.stringify(routes)
+    });
     writeTmpFile({
-      path: 'core/history.js',
+      path: 'core/routes.js',
       content
     })
    })
