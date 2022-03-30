@@ -1,7 +1,7 @@
 let mkdirp = require("mkdirp"); //创建文件夹
 let { writeFileSync, write } = require('fs');
 let { join, dirname } = require('path');
-let { absTmpPath } = require('./getPaths');
+let { absTmpPath } = require('../plugins/generateFiles/getPaths');
 
 /**
  * 向临时文件夹下面写文件

@@ -13,7 +13,7 @@ module.exports = {
   devtool: false,
   resolve: {
     alias: {
-      '@': path.join(cwd, 'src')
+      '@': ''
     }
   },
   devServer: {
@@ -37,5 +37,8 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/.umi2/index.html'
     })
-  ]
+  ],
+  stats: {
+    errorDetails: true
+  }
 }
