@@ -19,6 +19,79 @@ var history = (0,history__WEBPACK_IMPORTED_MODULE_0__.createBrowserHistory)();
 
 /***/ }),
 
+/***/ "./src/.umi3/core/plugin.js":
+/*!**********************************!*\
+  !*** ./src/.umi3/core/plugin.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Users_dongdi_Desktop_code_zf_umi3_src_app_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/app.js */ "./src/app.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var Plugin = /*#__PURE__*/function () {
+  function Plugin() {
+    _classCallCheck(this, Plugin);
+
+    this.hooks = {};
+  } // {apply:{patchRoutes: fn}}
+  // {patchRoutes: fn}2
+
+
+  _createClass(Plugin, [{
+    key: "register",
+    value: function register(plugin) {
+      var _this = this;
+
+      Object.keys(plugin.apply).forEach(function (key) {
+        // if (!this.hooks[key]) {
+        //   this.hooks[key] = []
+        // } else {
+        //   this.hooks[key] = this.hooks[key].concat(plugin.apply[key])
+        // }
+        console.log('register', plugin.apply[key]);
+        _this.hooks[key] = (_this.hooks[key] || []).concat(plugin.apply[key]);
+      });
+    }
+  }, {
+    key: "applyPlugins",
+    value: function applyPlugins(_ref) {
+      var key = _ref.key,
+          args = _ref.args;
+
+      if (!this.hooks[key]) {
+        this.hooks[key] = [];
+      }
+
+      console.log('applyPlugins', this.hooks[key]);
+      this.hooks[key].forEach(function (hook) {
+        hook(args);
+        console.log(hook(args));
+      });
+    }
+  }]);
+
+  return Plugin;
+}();
+
+var plugin = new Plugin();
+
+plugin.register({
+  apply: _Users_dongdi_Desktop_code_zf_umi3_src_app_js__WEBPACK_IMPORTED_MODULE_0__,
+  path: '/Users/dongdi/Desktop/code/zf/umi3/src/app.js'
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (plugin);
+
+/***/ }),
+
 /***/ "./src/.umi3/core/routes.js":
 /*!**********************************!*\
   !*** ./src/.umi3/core/routes.js ***!
@@ -30,6 +103,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getRoutes": () => (/* binding */ getRoutes)
 /* harmony export */ });
+/* harmony import */ var _plugin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./plugin */ "./src/.umi3/core/plugin.js");
+
 function getRoutes() {
   var routes = [{
     "path": "/",
@@ -55,8 +130,59 @@ function getRoutes() {
     }],
     "component": (__webpack_require__(/*! @/pages/user/_layout.js */ "./src/pages/user/_layout.js")["default"])
   }];
+  _plugin__WEBPACK_IMPORTED_MODULE_0__["default"].applyPlugins({
+    key: 'patchRoutes',
+    args: {
+      routes: routes
+    }
+  });
   return routes;
 }
+
+/***/ }),
+
+/***/ "./src/app.js":
+/*!********************!*\
+  !*** ./src/app.js ***!
+  \********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "patchRoutes": () => (/* binding */ patchRoutes)
+/* harmony export */ });
+function patchRoutes(_ref) {
+  var routes = _ref.routes;
+  console.log('routes', routes);
+  routes.unshift({
+    path: '/foo',
+    exact: true,
+    component: (__webpack_require__(/*! @/foo */ "./src/foo.js")["default"])
+  });
+}
+
+/***/ }),
+
+/***/ "./src/foo.js":
+/*!********************!*\
+  !*** ./src/foo.js ***!
+  \********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+
+var foo = function foo() {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, "foo");
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (foo);
 
 /***/ }),
 
@@ -33981,19 +34107,20 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/node_modules/react-router/esm/react-router.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/node_modules/react-router/esm/react-router.js");
 /* harmony import */ var _core_history__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./core/history */ "./src/.umi3/core/history.js");
 /* harmony import */ var _core_routes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./core/routes */ "./src/.umi3/core/routes.js");
+/* harmony import */ var _core_plugin__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./core/plugin */ "./src/.umi3/core/plugin.js");
+
 
 
 
 
 
 var routes = (0,_core_routes__WEBPACK_IMPORTED_MODULE_3__.getRoutes)();
-react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Router, {
+react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Router, {
   history: _core_history__WEBPACK_IMPORTED_MODULE_2__["default"]
 }, renderRoutes(routes)), document.getElementById('root'));
-console.log('rotes', renderRoutes(routes));
 
 function renderRoutes(routes) {
   return routes.map(function (_ref) {
@@ -34002,12 +34129,12 @@ function renderRoutes(routes) {
         RouteComponent = _ref.component,
         _ref$routes = _ref.routes,
         childrenRoutes = _ref$routes === void 0 ? [] : _ref$routes;
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Route, {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Route, {
       key: path,
       path: path,
       exact: exact,
       render: function render(routeProps) {
-        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(RouteComponent, routeProps, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Switch, null, renderRoutes(childrenRoutes)));
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(RouteComponent, routeProps, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Switch, null, renderRoutes(childrenRoutes)));
       }
     });
   });

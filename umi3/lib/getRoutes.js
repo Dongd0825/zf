@@ -19,10 +19,8 @@ function getRoutes(opts) {
 function filteToRouteReducer(opts, routes, file) {
   const { root, relDir = '' } = opts
   const absPath = join(root, relDir, file);
-  console.log('absPath',absPath);
   // TODO
   if (statSync(absPath).isDirectory()) {
-    console.log('sss');
     const relFile = join(relDir, file); // user
     const layoutPath = join(root, relFile, '_layout.js');
 
@@ -88,7 +86,7 @@ function replacer(key, value) {
  result = result.replace(/\"component\": (\"(.+?)\")/g, (_, m1, m2) => {
    return `"component":${m2.replace(/\^/g, '"')}`
  })
- console.log('result', result);
+//  console.log('result', result);
 
 // export default routes;
 

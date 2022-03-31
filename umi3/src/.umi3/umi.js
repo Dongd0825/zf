@@ -3,6 +3,7 @@ import ReactDom from 'react-dom';
 import {Router, Route, Switch} from 'react-router-dom';
 import history from './core/history';
 import {getRoutes} from './core/routes';
+import plugin from './core/plugin';
 
 let routes = getRoutes();
 ReactDom.render(
@@ -11,7 +12,6 @@ ReactDom.render(
   </Router>,
   document.getElementById('root')
 )
-console.log('rotes', renderRoutes(routes));
 
 function renderRoutes(routes) {
   return routes.map(({path, exact, component: RouteComponent, routes: childrenRoutes = []}) => {
