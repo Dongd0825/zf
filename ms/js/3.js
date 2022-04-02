@@ -69,35 +69,37 @@ Object.defineProperty(Object, 'flatten', {
 
 // console.log(Object.flatten(obj));
 
+const unobj = {   
+  1: 100,
+  'a.b': 1,  
+  'a.c': 2, 
+  'a.d.e': 3,
+  'a.d[2]': 200,  
+  'b[0]': 1, 
+  'b[1]': 2,    
+  'b[2].a': 3,   
+  'b[2].b': 4,  
+  'c': 1
+}
+//https://gist.github.com/wxingheng/3d04ef425c21f018830d8e07993ae4e0
 Object.defineProperty(Object, 'unflatten', {
   enumerable: false,
   configurable: true,
   writeable: true,
-  value: function flatten(obj) {
+  value: function unflatten(obj) {
     let result = {};
-    function flat (obj, attr) {
-      const isArray = Array.isArray(obj);
-      const isObject = Object.prototype.toString.call(obj) === '[object Object]';
-
-      if (isArray || isObject) {
-        if (isObject && Object.keys(obj).length === 0) {
-          result[attr] = {};
-          return
-        }
-        if (isArray && obj.length === 0) {
-          result[attr] = [];
-          return
-        }
-        for(let _attr of  Object.keys(obj)) {
-          let tempAttr = isNaN(_attr) ? `.${_attr}` :`[${_attr}]`;
-          flat(obj[_attr], !attr ? _attr: attr + tempAttr);
-        }
-        
-        return
+    for (let p in obj) {
+      let prop = '',
+          cur = result,
+          reg = /\.?([^.\[\]]+)|\[(\d+)\]/g;
+      while(m = reg.exec(p)) {
+        cur = cur[prop] || (cur[prop] = (m[2] ? [] : {}));
+        // console.log('cur', cur, cur[prop]);
+        prop = m[2] || m[1];
       }
-      result[attr] = obj;
+      cur[prop] = obj[p];
     }
-    flat(obj, '');
-    return result;
+    return result[""] || result;
   }
 })
+console.log(Object.unflatten(unobj));
