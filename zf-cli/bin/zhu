@@ -1,7 +1,5 @@
 #! /usr/bin/env node
 
-console.log('zhu cli')
-
 // - 配置可执行命令 commander
 const program = require('commander');
 const chalk = require('chalk');
@@ -13,7 +11,7 @@ program
   .description('create a new project')
   .option('-f, --force', 'overwrite target diectory if it is exist')
   .action((name, cmd) => {
-    console.log('name', name, cmd);
+    require('../lib/create')(name, cmd);
   })
 
 // 配置
