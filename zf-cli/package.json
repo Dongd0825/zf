@@ -1,0 +1,22 @@
+{
+  "name": "zf-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "zf-cli": "./bin/zhu",
+    "zf": "./bin/zhu"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "commander": "^9.1.0",
+    "fs-extra": "^10.0.1",
+    "inquirer": "^8.2.2"
+  }
+}

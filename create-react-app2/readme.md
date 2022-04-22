@@ -1,0 +1,4 @@
+- 学习create-react-app/
+  - 1.创建项目的流程 
+  - 2. react-scripts里面的命令 init build start
+  - 3. 就是cra-template里面的webpack配置的最佳实践 详细配置
