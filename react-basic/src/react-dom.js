@@ -32,19 +32,23 @@ function createDom(vDom) {
       reconcileChildren(props.children, dom);
     }
   }
+  vDom.dom = dom;
   return dom;
 }
 
 function renderClassComponent(vDom) {
   const { type, props } = vDom;
   const instance = new type(props);
+  vDom.classInstance = instance;
   const renderDom = instance.render();
+  instance.oldRenderVDom = renderDom;
   return createDom(renderDom);
 }
 
 function renderFunctionComponent(vDom) {
   const { type, props } = vDom;
   const renderDom = type(props);
+  vDom.oldRenderVDom = renderDom;
   return createDom(renderDom);
 }
 
@@ -63,6 +67,8 @@ function updateProps(dom, oldProps = {}, newProps = {}) {
       for (let attr in styleObj) {
         dom.style[attr] = styleObj[attr];
       }
+    } else if (/^on[A-Z].*/.test(key)) {
+      dom[key.toLowerCase()] = newProps[key];
     } else {
        dom[key] = newProps[key];
     }
@@ -74,8 +80,27 @@ function updateProps(dom, oldProps = {}, newProps = {}) {
   }
 }
 
+export function compareTwoVDom(parentNode, newVDom, oldVDom) {
+  let newDom = createDom(newVDom);
+  let oldDom = findDom(oldVDom);
+  parentNode.replaceChild(newDom, oldDom);
+}
+
+export function findDom(vDom) {
+  if (!vDom) {
+    return
+  }
+  // 原生类型
+  if (vDom.dom) {
+    return vDom.dom;
+  } else { // class function类型
+    let oldVDom = vDom.classInstance ? vDom.classInstance.oldRenderVDom :  vDom.oldRenderVDom;
+    return findDom(oldVDom);
+  }
+}
+
 const ReactDom = {
-  render
+  render,
 }
 
 export default ReactDom;

@@ -5,7 +5,7 @@ import { Component } from './Component';
 
 /**
  * 创建虚拟dom
- * @param {*} type 元素类型
+ * @param {*} type 元素类型 class function
  * @param {*} config style children
  * @param {*} children 如果两个儿子就是数组，如果没有元素就是字符串
  * @returns 
@@ -15,8 +15,16 @@ function createElement(
   config,
   children
 ) {
-  delete config.__self;
-  delete config.__source;
+  let ref;
+  let key;
+  if (config) {
+    delete config.__source;
+    delete config.__self;
+    ref = config.ref;
+    delete config.ref;
+    key = config.key;
+    delete config.key;
+  }
 
   let props = {
     ...config
@@ -30,7 +38,8 @@ function createElement(
 
   return {
     $$typeof: REACT_ELEMENT,
-    key: props.key,
+    ref,
+    key,
     type,
     props,
   }
