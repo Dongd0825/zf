@@ -7,8 +7,10 @@
   <title>Document</title>
 </head>
 <body>
-  <div id="parent">
-    <p id="child">事件执行</p>
+  <div id="root">
+    <div id="parent">
+      <p id="child">事件执行</p>
+    </div>
   </div>
   <script>
    
@@ -19,8 +21,9 @@
         paths.push(current);
         current = current.parentNode;
       }
+      console.log('paths',paths)
       //[child, parent, body]
-      // 模拟捕获和冒泡 其实在这个时候，原生的捕获和冒泡已经结束了
+      // 模拟捕获和冒泡 其实在这个时候，原生的捕获和冒泡已经结束了??
       if (useCapture) {
         // react模拟捕获
         for(let i = paths.length - 1; i > 0; i--) {
@@ -76,12 +79,14 @@
     }
 
   // document原生捕获
+  //paths (6) [p#child, div#parent, div#root, body, html, document]
   // 父元素React元素捕获
   // 子元素React元素捕获
   // 父元素元素捕获
   // 子元素元素捕获
   // 子元素元素冒泡
   // 父元素元素冒泡
+  //paths (6) [p#child, div#parent, div#root, body, html, document]
   // 子元素React元素冒泡
   // 父元素React元素冒泡
   // document原生冒泡

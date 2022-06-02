@@ -45,10 +45,15 @@ function createElement(
   }
 }
 
+function createRef () {
+  return { current: null }
+}
+
 
 const React = {
   createElement,
   Component,
+  createRef
 }
 
 export default React;

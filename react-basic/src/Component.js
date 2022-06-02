@@ -1,5 +1,19 @@
 import { REACT_COMPONENT } from './constants';
 import { findDom, compareTwoVDom } from './react-dom';
+
+// 全局变量
+export let updateQueue = {
+  isBatchingUpdate: false,
+  updaters: new Set(),
+  batchUpdate() { // 批量更新
+    updateQueue.isBatchingUpdate = false;
+    for(var updater of updateQueue.updaters) {
+      updater.updateComponent();
+    }
+    updateQueue.updaters.clear();
+  }
+}
+
 class Updater {
   constructor(classInstance) {
     this.classInstance = classInstance;
@@ -12,7 +26,11 @@ class Updater {
   }
 
   emitUpdate() {
-    this.updateComponent();
+    if (updateQueue.isBatchingUpdate) {
+      updateQueue.updaters.add(this);
+    } else {
+      this.updateComponent();
+    }
   }
 
   updateComponent() {
@@ -29,7 +47,9 @@ class Updater {
       if (typeof nextState === 'function') {
         nextState = nextState(state);
       }
-      state = { ...state, ...nextState}
+      state = { ...state, ...nextState };
+      console.log('state', state);
+      console.log('state', state);
     })
     pendingStates.length = 0;
     return state;
@@ -55,6 +75,7 @@ export class Component {
   }
 
   forceUpdate() {
+    console.log('forceupdate')
     let oldVDom = this.oldRenderVDom;
     let oldDom = findDom(oldVDom);
     let newVDom = this.render();

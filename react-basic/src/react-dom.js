@@ -1,4 +1,6 @@
 import { REACT_COMPONENT, REACT_TEXT } from "./constants";
+import { addEvent } from './event';
+
 // TODO key
 
 function render(vDom, container) {
@@ -11,7 +13,7 @@ function mount(vDom, container) {
 }
 
 function createDom(vDom) {
-  const { type, props } = vDom;
+  const { type, props, ref } = vDom;
   let dom;
   if (type === REACT_TEXT) {
     dom = document.createTextNode(props);
@@ -32,16 +34,24 @@ function createDom(vDom) {
       reconcileChildren(props.children, dom);
     }
   }
+  if (ref) {
+    ref.current = dom;
+  }
+  
   vDom.dom = dom;
   return dom;
 }
 
 function renderClassComponent(vDom) {
-  const { type, props } = vDom;
+  const { type, props, ref } = vDom;
   const instance = new type(props);
   vDom.classInstance = instance;
+  if (ref) {
+    ref.current = instance;
+  }
   const renderDom = instance.render();
   instance.oldRenderVDom = renderDom;
+  
   return createDom(renderDom);
 }
 
@@ -67,8 +77,10 @@ function updateProps(dom, oldProps = {}, newProps = {}) {
       for (let attr in styleObj) {
         dom.style[attr] = styleObj[attr];
       }
-    } else if (/^on[A-Z].*/.test(key)) {
-      dom[key.toLowerCase()] = newProps[key];
+    } else if (/^on[A-Z].*/.test(key)) { //startsWith('on')
+      // 走addEvent代理，代理到document
+      addEvent(dom, key.toLowerCase(), newProps[key]);
+      // dom[key.toLowerCase()] = newProps[key];
     } else {
        dom[key] = newProps[key];
     }

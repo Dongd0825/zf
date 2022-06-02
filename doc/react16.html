@@ -18,8 +18,9 @@
         paths.push(current);
         current = current.parentNode;
       }
+      console.log('paths', paths)
       //[child, parent, body]
-      // 模拟捕获和冒泡 其实在这个时候，原生的捕获和冒泡已经结束了
+      // 模拟捕获和冒泡 其实在这个时候，原生的捕获和冒泡已经结束了!!
       // react模拟捕获
       for(let i = paths.length - 1; i > 0; i--) {
         let handler = paths[i].onClickCapture;
@@ -71,6 +72,7 @@
   // 子元素元素捕获
   // 子元素元素冒泡
   // 父元素元素冒泡
+  //paths
   // 父元素React元素捕获
   // 子元素React元素捕获
   // 子元素React元素冒泡

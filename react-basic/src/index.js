@@ -1,5 +1,6 @@
-import React from 'react';
-import ReactDom from 'react-dom';
+import { Component } from 'react';
+import React from './react';
+import ReactDom from './react-dom';
 
 
 // 用className 是class是关键字，并且操作dom的时候，也要dom.className = 'newClass'
@@ -18,26 +19,48 @@ function FunctionComponent(props) {
 
 class ClassComponent extends React.Component {
   state = {
-    number: 0
+    number: 0,
+    
   }
-  handleClick = () => {
-    this.setState({number: this.state.number+1});
-    console.log('number', this.state.number);
-    this.setState({number: this.state.number+1});
-    console.log('number', this.state.number);
-    setTimeout(() => {
-      this.setState({number: this.state.number+1});
-    console.log('number', this.state.number);
-    this.setState({number: this.state.number+1});
-    console.log('number', this.state.number);
-    })
+  domRef = React.createRef()
+  childRef = React.createRef()
+  handleClick = (e) => {
+    console.log("handleClick")
+    this.childRef.current.focus();
+    // e.stopPropagation(); 合成事件上react自己实现的方法，可以阻塞冒泡
+
+    // this.setState({number: this.state.number+1}); 
+    // console.log('number', this.state.number); 0
+    // this.setState({number: this.state.number+1});
+    // console.log('number', this.state.number); 0
+    // setTimeout(() => { // 17是非批量 18批量 通外测的执行方式一样
+    //   this.setState({number: this.state.number+1});
+    //   console.log('number', this.state.number); 2
+    //   this.setState({number: this.state.number+1});
+    //   console.log('number', this.state.number); 3
+    // })
+  }
+  handleDivClick = () => {
+    console.log('divClick')
   }
   render() {
     return(
-      <h1 style={{color: 'red'}}>
-        <button onClick={this.handleClick}>+1</button>
+      <h1 style={{color: 'red'}} onClick={this.handleDivClick}>
+        <button onClick={this.handleClick} ref={this.domRef}>+1</button>
         <span>{this.state.number}</span>
+        <Child ref={this.childRef}></Child>
       </h1>
+    )
+  }
+}
+
+class Child extends React.Component {
+  focus() {
+    console.log('focus')
+  }
+  render() {
+    return (
+      <div>child</div>
     )
   }
 }
