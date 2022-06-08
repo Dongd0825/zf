@@ -25,7 +25,8 @@ class Updater {
     this.emitUpdate();
   }
 
-  emitUpdate() {
+  emitUpdate(nextProps) {
+    this.nextProps = nextProps;
     if (updateQueue.isBatchingUpdate) {
       updateQueue.updaters.add(this);
     } else {
@@ -35,8 +36,8 @@ class Updater {
 
   updateComponent() {
     const { pendingStates, classInstance } = this;
-    if (pendingStates.length > 0) {
-      shouldUpdate(classInstance, this.getState())
+    if (this.nextProps || pendingStates.length > 0) {
+      shouldUpdate(classInstance, this.nextProps, this.getState())
     }
   }
 
@@ -48,17 +49,32 @@ class Updater {
         nextState = nextState(state);
       }
       state = { ...state, ...nextState };
-      console.log('state', state);
-      console.log('state', state);
     })
     pendingStates.length = 0;
     return state;
   }
 }
 
-function shouldUpdate(classInstance, nextState) {
-  classInstance.state = nextState;
-  classInstance.forceUpdate();
+function shouldUpdate(classInstance, nextProps, nextState) {
+  let willUpdate = true;
+  if (classInstance.shouldComponentUpdate && !classInstance.shouldComponentUpdate(nextProps, nextState)) {
+    willUpdate = false;
+  }
+
+  if (willUpdate && classInstance.componentWillUpdate) {
+    classInstance.componentWillUpdate();
+  }
+
+  // 无论shouldUpdate是true还是false 都要更新state 更新props
+  if (nextProps) {
+    classInstance.props = nextProps;
+  }
+  if (nextState) {
+    classInstance.state = nextState;
+  }
+  if (willUpdate) {
+    classInstance.forceUpdate();
+  }
 }
 
 export class Component {
@@ -75,12 +91,14 @@ export class Component {
   }
 
   forceUpdate() {
-    console.log('forceupdate')
     let oldVDom = this.oldRenderVDom;
     let oldDom = findDom(oldVDom);
     let newVDom = this.render();
     compareTwoVDom(oldDom.parentNode, newVDom, oldVDom);
     this.oldRenderVDom = newVDom;
+    if (this.componentDidUpdate) {
+      this.componentDidUpdate();
+    }
   }
 }
 

@@ -12,8 +12,9 @@ export function addEvent(dom, eventType, handler) {
 /**
  * 合成事件
  * 1.屏蔽浏览器的差异
- * 2.批量更新  控制合适触发批量更新
+ * 2.批量更新  控制何时触发批量更新
  * updateQueue.isBatchingUpdate = true;
+ * updateQueue.batchUpdate();
  * @param {*} event  真实事件
  */
 function dispatchEvent(event) {
@@ -66,7 +67,7 @@ function preventDefault() {
 }
 
 function stopPropagation() {
-  // this.defaultPrevented = true;
+  // this.isPropagationStopped = true;
   const event = this.nativeEvent;
   if (event.stopPropagation) {
     event.stopPropagation();

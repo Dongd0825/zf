@@ -1,73 +1,91 @@
-import { Component } from 'react';
 import React from './react';
 import ReactDom from './react-dom';
 
-
-// 用className 是class是关键字，并且操作dom的时候，也要dom.className = 'newClass'
-// babel 转义jsx React.createElement(react_element, {style: {},}, 23, '<span>')
-// const jsx = <h1 style={{color: 'red'}}>23<span>ssss</span></h1>
-
-function FunctionComponent(props) {
-  return (
-    <h1 style={{color: 'red'}}>{props.msg}<span>ssss</span></h1>
-  )
-}
-
-// 函数组件
-// babel转化 createElement('functionComponent', {msg: 'msg'})
-// const jsx = <FunctionComponent msg={'msg'}></FunctionComponent>
-
-class ClassComponent extends React.Component {
+class FaterComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    console.log('father 1.init')
+  }
   state = {
     number: 0,
-    
   }
-  domRef = React.createRef()
-  childRef = React.createRef()
-  handleClick = (e) => {
-    console.log("handleClick")
-    this.childRef.current.focus();
-    // e.stopPropagation(); 合成事件上react自己实现的方法，可以阻塞冒泡
 
-    // this.setState({number: this.state.number+1}); 
-    // console.log('number', this.state.number); 0
-    // this.setState({number: this.state.number+1});
-    // console.log('number', this.state.number); 0
-    // setTimeout(() => { // 17是非批量 18批量 通外测的执行方式一样
-    //   this.setState({number: this.state.number+1});
-    //   console.log('number', this.state.number); 2
-    //   this.setState({number: this.state.number+1});
-    //   console.log('number', this.state.number); 3
-    // })
+  componentWillMount() {
+    console.log('father 2.componentWillMount')
   }
-  handleDivClick = () => {
-    console.log('divClick')
-  }
-  render() {
-    return(
-      <h1 style={{color: 'red'}} onClick={this.handleDivClick}>
-        <button onClick={this.handleClick} ref={this.domRef}>+1</button>
-        <span>{this.state.number}</span>
-        <Child ref={this.childRef}></Child>
-      </h1>
-    )
-  }
-}
 
-class Child extends React.Component {
-  focus() {
-    console.log('focus')
+  componentDidMount() {
+    console.log('father 4.componentDidMount')
   }
+
+  shouldComponentUpdate() {
+    console.log('father 5.shouldComponentUpdate')
+    return true;
+  }
+
+  componentWillUpdate() {
+    console.log('father 6.componentWillUpdate')
+  }
+
+  componentDidUpdate() {
+    console.log('father 7.componentDidUpdate')
+  }
+
+  handleClick = () => {
+    this.setState({
+      number: this.state.number + 1
+    })
+  }
+
   render() {
+    console.log('faher 3.render')
     return (
-      <div>child</div>
+      <div>
+        {this.state.number}
+        <button onClick={this.handleClick}>+1</button>
+        <ChildComponent number={this.state.number}></ChildComponent>
+      </div>
     )
+   
   }
 }
 
+class ChildComponent extends React.Component {
+
+  componentWillMount() {
+    console.log('child 2.componentWillMount')
+  }
+
+  componentDidMount() {
+    console.log('child 4.componentDidMount')
+  }
+  componentWillReceiveProps(nextProps) {
+    console.log('child 5.componentWillReceiveProps', nextProps)
+  }
+
+  shouldComponentUpdate() {
+    console.log('child 6.shouldComponentUpdate')
+    return true;
+  }
+
+  componentWillUpdate() {
+    console.log('child 7.componentWillUpdate')
+  }
+
+  componentDidUpdate() {
+    console.log('child 8.componentDidUpdate')
+  }
+
+  render() {
+    console.log('child 3.render')
+    return(
+      <div>{this.props.number}</div>
+    )
+  }
+}
 
 // 类组件
-const jsx = <ClassComponent msg="msg"></ClassComponent>
+const jsx = <FaterComponent></FaterComponent>
 
 console.log('jsx', jsx)
 ReactDom.render(jsx, document.getElementById('root'))
