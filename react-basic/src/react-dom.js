@@ -1,7 +1,8 @@
 import { REACT_COMPONENT, REACT_TEXT, REACT_FORWARD_REF_TYPE, REACT_FRAGMENT } from "./constants";
 import { addEvent } from './event';
 
-// TODO key
+const PLACEMENT = 'PLACEMENT';
+const MOVE = 'MOVE';
 
 function render(vDom, container) {
   mount(vDom, container);
@@ -81,6 +82,7 @@ function renderFunctionComponent(vDom) {
 
 function reconcileChildren(childVDom, dom) {
   for (let i = 0; i < childVDom.length; i++) {
+    childVDom[i].mountIndex = i;
     mount(childVDom[i], dom);
   }
 }
@@ -131,8 +133,7 @@ export function compareTwoVDom(parentNode, newVDom, oldVDom, nextDom) {
     // 新的没有，老的有
     unMountDom(oldVDom);
   } else if (newVDom && oldVDom && oldVDom.type !== newVDom.type) {
-    //新老都有，但类型不同 
-    // TODO场景？
+    //新老都有，但类型不同  p -> div
     let newDom = createDom(newVDom);
     unMountDom(oldVDom);
     if (newDom.classInstance && newDom.classInstance.componentDidMount) {
@@ -200,7 +201,13 @@ function updateClassComponent(oldVDom, newVDom) {
 }
 
 function updateFunctionComponent(oldVDom, newVDom) {
-
+  let currentDOM = findDom(oldVDom);
+  if (!currentDOM) return;
+  let parentDom = currentDOM.parentNode;
+  let { type, props } = newVDom;
+  let newRenderVdom = type(props);
+  compareTwoVDom(parentDom, newRenderVdom, oldVDom.oldRenderVDom);
+  newVDom.oldRenderVDom = newRenderVdom;
 }
 
 export function findDom(vDom) {
@@ -216,7 +223,70 @@ export function findDom(vDom) {
   }
 }
 
-function updateChildren(currentDOM, oldVDomChildren, newVDomChildren){
+function updateChildren(parentDom, oldVDomChildren, newVDomChildren){
+  oldVDomChildren = Array.isArray(oldVDomChildren) ? oldVDomChildren : [oldVDomChildren];
+  newVDomChildren = Array.isArray(newVDomChildren) ? newVDomChildren : [newVDomChildren];
+  let keyOldMap = {};
+  let lastPlacedIndex = 0;
+  let patch = [];
+  oldVDomChildren.forEach((oldVChild, index) => {
+    let key = oldVChild.key ? oldVChild.key : index;
+    keyOldMap[key] = oldVChild;
+  });
+  newVDomChildren.forEach((newVChild, index) => {
+    newVChild.mountIndex = index;
+    let key = newVChild.key ? newVChild.key : index;
+    let oldVChild = keyOldMap[key];
+    if (oldVChild) {
+      updateElement(newVChild, oldVChild);
+      // 找到老节点 并且在最新节点下标的左边
+      if (oldVChild.mountIndex < lastPlacedIndex) {
+        patch.push({
+          type: MOVE,
+          newVChild,
+          oldVChild,
+          mountIndex: index
+        });
+      }
+      delete keyOldMap[key];
+      // 记录匹配的老节点下标
+      lastPlacedIndex = Math.max(lastPlacedIndex, oldVChild.mountIndex);
+    } else {
+      patch.push({
+        type: PLACEMENT,
+        newVChild,
+        mountIndex: index
+      });
+    }
+  })
+  let moveChildren = patch.filter((action) => action.type === MOVE).map(action => action.oldVChild);
+  // 把剩下的节点和需要移动的节点删除
+  Object.values(keyOldMap).concat(moveChildren).forEach(oldVChild => {
+    let currentDOM = findDom(oldVChild);
+    parentDom.removeChild(currentDOM);
+  });
+  patch.forEach(action => {
+    let { type, oldVChild, newVChild, mountIndex } = action;
+    let childNodes = parentDom.childNodes;
+    // 新增节点
+    if (type === PLACEMENT) {
+      let newDom = createDom(newVChild);
+      let childNode = childNodes[mountIndex];
+      if (childNode) {
+        childNodes.insertBefore(newDom, childNode);
+      } else {
+        childNodes.appendChild(newDom);
+      }
+    } else if (type === MOVE) {
+      let oldDom = findDom(oldVChild);
+      let childNode = childNodes[mountIndex];
+      if (childNode) {
+        childNodes.insertBefore(oldDom, childNode);
+      } else {
+        childNodes.appendChild(oldDom);
+      }
+    }
+  })
 
 }
 
