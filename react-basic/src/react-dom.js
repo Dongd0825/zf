@@ -21,6 +21,7 @@ function createDom(vDom) {
   } else if (type && type.$$typeof === REACT_FORWARD_REF_TYPE) {
     return mountForwardComponent(vDom);
   } else if (type === REACT_TEXT) {
+    // debugger
     dom = document.createTextNode(props);
   } else if (typeof type === 'function') {
     if (type.isReactComponent === REACT_COMPONENT) {
@@ -134,19 +135,22 @@ export function compareTwoVDom(parentNode, newVDom, oldVDom, nextDom) {
     unMountDom(oldVDom);
   } else if (newVDom && oldVDom && oldVDom.type !== newVDom.type) {
     //新老都有，但类型不同  p -> div
-    let newDom = createDom(newVDom);
     unMountDom(oldVDom);
+    let newDom = createDom(newVDom);
     if (newDom.classInstance && newDom.classInstance.componentDidMount) {
       newDom.classInstance.componentDidMount();
     }
-    // TODO newDom parentNode.appendChild(newDom);？？
+    if (nextDom) {
+      nextDom.insertBefore(newDom, nextDom);
+    } else {
+      parentNode.appendChild(newDom);
+    }
   } else {
     // 新老都有 类型相同
     updateElement(newVDom, oldVDom);
   }
 } 
 
-// TODO
 function unMountDom(vDom) {
   const { props, ref } = vDom;
   let currentDom = findDom(vDom);//获取此虚拟DOM对应的真实DOM
@@ -166,16 +170,15 @@ function unMountDom(vDom) {
   currentDom.remove();
 }
 
-// 更新
+// 更新 复用dom，更新属性
 function updateElement(newVDom, oldVDom) {
-  if (oldVDom.type === REACT_TEXT) {
-    let currentDOM = newVDom.dom = findDom(oldVDom);
+  if (oldVDom.type === REACT_TEXT) { // text文本节点
+    let currentDOM = newVDom.dom = findDom(oldVDom); // 复用dom
     if (oldVDom.props !== newVDom.props) {
-      currentDOM.text = newVDom.props;
+      currentDOM.textContent = newVDom.props;
     }
-    return
-  } else if (typeof oldVDom.type === 'string') {
-    let currentDOM = newVDom.dom = findDom(oldVDom);
+  } else if (typeof oldVDom.type === 'string') { // 原生节点
+    let currentDOM = newVDom.dom = findDom(oldVDom); // 复用dom
     updateProps(currentDOM, oldVDom.props, newVDom.props);
     updateChildren(currentDOM, oldVDom.props.children, newVDom.props.children);
   } else if (oldVDom.type === REACT_FRAGMENT) {
