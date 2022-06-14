@@ -1,6 +1,6 @@
 
-import  { REACT_ELEMENT, REACT_FORWARD_REF_TYPE } from './constants';
-import { toVDom } from './utils';
+import  { REACT_ELEMENT, REACT_FORWARD_REF_TYPE, REACT_PROVIDER, REACT_CONTEXT, REACT_MEMO } from './constants';
+import { toVDom, shallowEqual } from './utils';
 import { Component } from './Component';
 
 /**
@@ -56,12 +56,58 @@ function forwardRef (render) {
   }
 }
 
+function createContext() {
+  let context = { _currentValue: undefined };
+  context.Provider = {
+    $$typeof: REACT_PROVIDER,
+    _context: context
+  }
+  context.Consumer = {
+    $$typeof: REACT_CONTEXT,
+    _context: context
+  }
+  return context;
+}
+
+function cloneElement(element, newProps, ...newChildren) {
+  let children = element.props && element.props.children;
+  if (newChildren.length > 0) {
+    children = newChildren.map(toVDom);
+  }
+
+  if (children.length === 1) {
+    children = children[0]
+  };
+  let props = { ...element.props, ...newProps, children}
+  return { ...element, props };
+}
+
+class PureComponent extends Component {
+  constructor(props) {
+    super(props);
+  }
+  shouldComponentUpdate(newProps, nextState) {
+    return !shallowEqual(this.props, newProps) || !shallowEqual(this.state, nextState);
+  }
+} 
+
+function memo(type, compare = shallowEqual) {
+  return {
+    $$typeof: REACT_MEMO,
+    type,
+    compare,
+  }
+}
 
 const React = {
   createElement,
   Component,
   createRef,
-  forwardRef
+  forwardRef,
+  createContext,
+  cloneElement,
+  PureComponent,
+  memo
 }
 
 export default React;

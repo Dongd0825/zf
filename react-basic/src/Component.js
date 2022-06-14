@@ -93,11 +93,24 @@ export class Component {
   forceUpdate() {
     let oldVDom = this.oldRenderVDom;
     let oldDom = findDom(oldVDom);
+    if (this.constructor.contextType) {
+      this.context = this.constructor.contextType._currentValue;
+    }
+    if (this.constructor.getDerivedStateFromProps) {
+      // 根据最新的props和上一个state获取最新的state
+      // 因为fiber的引入，导致will开头的钩子会多次渲染，所以去除willumount钩子，其他带will的钩子都废除
+      let newState = this.constructor.getDerivedStateFromProps(this.props, this.state);
+      if (newState) {
+        this.state = { ...this.state, ...newState };
+      }
+    }
+    // 暂存这一帧的shot对象
+    let snapshot = this.getSnapshotBeforeUpdate && this.getSnapshotBeforeUpdate();
     let newVDom = this.render();
     compareTwoVDom(oldDom.parentNode, newVDom, oldVDom);
     this.oldRenderVDom = newVDom;
     if (this.componentDidUpdate) {
-      this.componentDidUpdate();
+      this.componentDidUpdate(this.props, this.state, snapshot);
     }
   }
 }

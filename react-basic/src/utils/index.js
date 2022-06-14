@@ -7,3 +7,27 @@ export function toVDom(element) {
       props: element
   } : element;
 }
+
+/** 浅比较是否相等 */
+export function shallowEqual(obj1, obj2) {
+  if (obj1 === obj2) {
+    return true;
+  }
+
+  if (typeof obj1 != "object" || !obj1 || typeof obj2 != "object" || !obj2) {
+    return false;
+  }
+
+  let keys1 = Object.keys(obj1);
+  let keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (let key of keys1) {
+    if (!obj2.hasOwnProperty(key) || obj1[key] !== obj2[key]) {
+      return false
+    }
+  }
+  return true;
+}

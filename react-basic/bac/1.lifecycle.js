@@ -1,5 +1,5 @@
-import React from './react';
-import ReactDom from './react-dom';
+import React from '../src/react';
+import ReactDom from '../src/react-dom';
 
 class FaterComponent extends React.Component {
   constructor(props) {
