@@ -2,6 +2,9 @@
 import  { REACT_ELEMENT, REACT_FORWARD_REF_TYPE, REACT_PROVIDER, REACT_CONTEXT, REACT_MEMO } from './constants';
 import { toVDom, shallowEqual } from './utils';
 import { Component } from './Component';
+import * as hooks from './react-dom';
+
+export * from './react-dom';
 
 /**
  * 创建虚拟dom
@@ -99,6 +102,8 @@ function memo(type, compare = shallowEqual) {
   }
 }
 
+
+
 const React = {
   createElement,
   Component,
@@ -107,7 +112,9 @@ const React = {
   createContext,
   cloneElement,
   PureComponent,
-  memo
+  memo,
+  ...hooks,
 }
+
 
 export default React;

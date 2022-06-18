@@ -1,31 +1,39 @@
+
 import React from './react';
 import ReactDOM from './react-dom';
-class Dialog extends React.Component {
-    constructor(props) {
-        super(props);
-        this.node = document.createElement('div');
-        document.body.appendChild(this.node);
-    }
-    render() {
-        return ReactDOM.createPortal(
-            <div className="dialog">
-                {this.props.children}
-            </div>,
-            this.node
-        );
-    }
-    componentWillUnmount() {
-        window.document.body.removeChild(this.node);
-    }
+
+function Child(props, ref) {
+    const inputRef = React.useRef();
+    React.useImperativeHandle(ref, () => (
+        {
+            focus() {
+                inputRef.current.focus();
+            }
+        }
+    ));
+    return (
+        <input type="text" ref={inputRef} />
+    )
 }
-class App extends React.Component {
-    render() {
-        return (
-            <div>
-                <Dialog>模态窗</Dialog>
-            </div>
-        )
+const ForwardChild = React.forwardRef(Child);
+function Parent() {
+    let [number, setNumber] = React.useState(0);
+    const inputRef = React.useRef();
+    function getFocus() {
+        console.log(inputRef.current);
+        inputRef.current.value = 'focus';
+        inputRef.current.focus();
     }
+    return (
+        <div>
+            <ForwardChild ref={inputRef} />
+            <button onClick={getFocus}>获得焦点</button>
+            <p>{number}</p>
+            <button onClick={() => {
+                debugger
+                setNumber( number + 1)
+            }}>+</button>
+        </div>
+    )
 }
-ReactDOM.render(
-    <App />, document.getElementById('root'));
+ReactDOM.render(<Parent/>,document.getElementById('root'));

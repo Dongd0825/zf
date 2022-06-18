@@ -4,8 +4,25 @@ import { addEvent } from './event';
 const PLACEMENT = 'PLACEMENT';
 const MOVE = 'MOVE';
 
+const hookStates = []; // 全局存放，源码是挂载到组件中
+let hookIndex = 0;
+let scheduleUpdate;
+let scheduleUpdated = false;
+
 function render(vDom, container) {
   mount(vDom, container);
+  scheduleUpdate = () => { // react 每次更新都从根结点开始
+    // 因为多次调用setNum的时候，会compareTwoVDom多次, 
+    // 利用微任务，统一渲染更新
+    if (!scheduleUpdated) {
+      scheduleUpdated = true;
+      queueMicrotask(() => {
+        hookIndex = 0;
+        compareTwoVDom(container, vDom, vDom); // 更新时候，用新的hooks状态渲染
+        scheduleUpdated = false;
+      })
+    }
+  }
 }
 
 function mount(vDom, container) {
@@ -98,6 +115,7 @@ function renderClassComponent(vDom) {
   }
   if (ref) {
     ref.current = instance;
+    instance.ref = ref;
   }
   if (instance.componentWillMount) {
     instance.componentWillMount();
@@ -370,7 +388,142 @@ function updateChildren(parentDom, oldVDomChildren, newVDomChildren){
       }
     }
   })
+}
 
+//useState 的替代方案。
+// 它接收一个形如 (state, action) => newState 的 reducer，并返回当前的 state 以及与其配套的 dispatch 方法
+export function useState(initialValue) {
+  return useReducer(null, initialValue);
+
+  // hookStates[hookIndex] = hookStates[hookIndex] || initialValue;
+  // let currentIndex = hookIndex;
+  // function action(value) {
+  //   let newState = typeof value === 'function' ? action(oldState) : value;
+  //   hookStates[currentIndex] = newState;
+  //   scheduleUpdate();
+  // }
+  // return [hookStates[hookIndex++], action]
+}
+
+export function useReducer(reducer, initialValue) {
+  hookStates[hookIndex] = hookStates[hookIndex] || typeof initialValue === 'function' ? initialValue(): initialValue;
+  let currentIndex = hookIndex;
+  function dispatch(action) {
+    let oldState = hookStates[currentIndex];
+    if (reducer) {
+      newState = reducer(oldState, action);
+      hookStates[currentIndex] = newState;
+    } else {
+       //判断action是不是函数，如果是传入老状态，计算新状态
+      action = typeof action === 'function' ? action(oldState) : action;
+      hookStates[currentIndex] = action;
+    }
+    scheduleUpdate();
+  }
+  return [hookStates[hookIndex++], dispatch]
+}
+
+export function useCallback(callback, deps) {
+  if (hookStates[hookIndex]) {
+    const [lastMemo, lastDeps] = hookStates[hookIndex];
+    let same = lastDeps.every((_,index) => _===deps[index])
+    if (same) {
+      hookIndex++;
+      return lastMemo;
+    } else {
+      hookStates[hookIndex++] = [callback, deps];
+      return callback;
+    }
+  } else {
+    hookStates[hookIndex++] = [callback, deps];
+    return callback;
+  }
+}
+
+export function useMemo(factory, deps) {
+  if (hookStates[hookIndex]) {
+    const [lastMemo, lastDeps] = hookStates[hookIndex];
+    let same = lastDeps.every((_,index) => _===deps[index]);
+    if (same) {
+      hookIndex++;
+      return lastMemo;
+    } else {
+      let newMemo = factory();
+      hookStates[hookIndex++] = [newMemo, deps];
+      return newMemo;
+    }
+  } else {
+    let newMemo = factory();
+    hookStates[hookIndex++] = [newMemo, deps];
+    return newMemo;
+  }
+}
+
+export function useContext(context) {
+  return context._currentValue
+}
+
+/**
+ * 放入宏任务中，在渲染后才执行
+ * @param {*} callback 
+ * @param {*} deps 
+ */
+export function useEffect(callback, deps = []) {
+  let currentIndex = hookIndex;
+  if (hookStates[hookIndex]) {
+    const [destory, lastDeps] = hookStates[hookIndex];
+    let same = deps && lastDeps.every((_,index) => _===deps[index]);
+    if (same) {
+      hookIndex++;
+    } else {
+      destory && destory(); // 执行销毁函数，每次执行前都会执行
+      setTimeout(()=>{
+        hookStates[currentIndex]=[callback(),deps];
+      });
+      hookIndex++;
+    }
+  } else {
+    setTimeout(()=>{
+      hookStates[currentIndex]=[callback(),deps];
+    });
+    hookIndex++;
+  }
+}
+
+/**
+ * useLayoutEffect 放入微任务中，在浏览器渲染前执行
+ * @param {*} callback 
+ * @param {*} deps 
+ */
+export function useLayoutEffect(callback, deps = []) {
+  let currentIndex = hookIndex;
+  if (hookStates[hookIndex]) {
+    const [destory, lastDeps] = hookStates[hookIndex];
+    let same = deps && lastDeps.every((_,index) => _ === deps[index]);
+    if (same) {
+      hookIndex++;
+    } else {
+      destory && destory(); // 执行销毁函数，每次执行前都会执行
+      queueMicrotask(()=>{
+        hookStates[currentIndex]=[callback(),deps];
+      });
+      hookIndex++;
+    }
+  } else {
+    queueMicrotask(()=>{
+      hookStates[currentIndex]=[callback(),deps];
+    });
+    hookIndex++;
+  }
+}
+
+export function useRef() {
+  hookStates[hookIndex] = hookStates[hookIndex] || {current:null};
+  return hookStates[hookIndex++];
+}
+
+export function useImperativeHandle(ref, handler) {
+  ref.current = handler();
 }
 
 const ReactDom = {
