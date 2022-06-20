@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite browser</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <ul>
+      <li onclick="go('/a')">
+        /a
+      </li>
+      <li onclick="go('/b')">
+        /b
+      </li>
+      <li onclick="go('/c')">
+        /c
+      </li>
+      <li onclick="forward()">forward</li>
+      <li onclick="back()">back</li>
+    </ul>
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+     
+      const historyObj = window.history;
+      (function (historyObj) {
+        historyObj.oldPushState = historyObj.pushState;
+        historyObj.pushState = (state, title, url) => {
+          historyObj.oldPushState.call(historyObj, state, title, url);
+          render();
+        }
+      }(historyObj))
+     
+      // function pushState(state, title, url) {
+      //   historyObj.pushState.call(historyObj, state, title, url);
+      //   render();
+      // }
+      function go (url) {
+        historyObj.pushState({}, null, url);
+      }
+      function forward() {
+        historyObj.go(1);
+      }
+      function back() {
+        historyObj.go(-1);
+      }
+      function render() {
+        document.getElementById('root').innerHTML = window.location.pathname;
+      }
+      window.onpopstate = () => {
+        let dom = document.getElementById('root');
+        dom.innerHTML = window.location.hash.slice(1);
+      }
+    </script>
+  </body>
+</html>
