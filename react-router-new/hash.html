@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React + TS</title>
+  </head>
+  <body>
+    <div id="root">
+    </div>
+    <ul>
+      <li><a href="#/a">#a</a></li>
+      <li><a href="#/b">#b</a></li>
+    </ul>
+    <script type="module" src="/src/main.tsx">
+    </script>
+    <script>
+      window.addEventListener('hashchange', function () {
+        console.log(window.location.hash);
+        let pathname = window.location.hash.slice(1);//把最前面的那个#删除 
+        root.innerHTML = pathname;
+      })
+    </script>
+  </body>
+</html>

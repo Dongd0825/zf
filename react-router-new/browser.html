@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React + TS</title>
+  </head>
+  <body>
+    <div id="root">
+    </div>
+    <ul>
+      <li><a onclick="go('a')">/a</a></li>
+      <li><a onclick="go('b')">/b</a></li>
+      <li><a onclick="go('c')">/c</a></li>
+      <li><a onclick="forward()">向前</a></li>
+      <li><a onclick="back()">向后</a></li>
+    </ul>
+    <script type="module" src="/src/main.tsx">
+    </script>
+    <script>
+      function render() {
+        root.innerHTML = window.location.pathname;
+      }
+
+      function go(url) {
+        pushState({name: url}, null, url);
+      }
+
+      function forward() {
+        oldHistory.go(1);
+      }
+
+      function back() {
+        oldHistory.go(-1);
+      }
+
+      let oldHistory = window.history;
+      function pushState(...args) {
+        oldHistory.pushState.call(oldHistory, ...args);
+        render()
+      }
+
+      window.addEventListener('popstate', function () {
+        console.log(window.location.pathname);
+        render();
+      })
+    </script>
+  </body>
+</html>
