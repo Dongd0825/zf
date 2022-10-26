@@ -29,6 +29,8 @@ class Counter extends React.Component {
     return (
       <>
         {this.props.state.number}
+        <button onClick={() => this.props.thunkAdd()}>thunk+</button>
+        <button onClick={() => this.props.promiseAdd()}>promise+</button>
         <button onClick={() => this.props.add1()}>+</button>
         <button onClick={() => store.dispatch({type: MINUS1})}>-</button>
       </>

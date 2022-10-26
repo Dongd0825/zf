@@ -1,4 +1,4 @@
-import { ADD1, MINUS1 } from "../../action-types";
+import { ADD1, MINUS1, AsyncADD1 } from "../../action-types";
 
 const initialState = {
   number: 0
